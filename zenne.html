@@ -1,0 +1,3110 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De Zenne — Brussel's Verborgen Ziel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --black:    #050a10;
+  --abyss:    #080f1a;
+  --deep:     #0c1825;
+  --navy:     #112236;
+  --water:    #1a4a7a;
+  --river:    #2d6fa8;
+  --foam:     #6aaed4;
+  --mist:     #a8cfe6;
+  --ice:      #d6ebf7;
+  --white:    #f0ede8;
+  --gold:     #c9a84c;
+  --gold-lt:  #e4c87a;
+  --amber:    #f0d090;
+  --rust:     #7a3020;
+  --moss:     #2a4a30;
+  --stone:    #5a5248;
+  --serif:    'Cormorant Garamond', Georgia, serif;
+  --sans:     'Syne', sans-serif;
+  --mono:     'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--serif);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ═══ CUSTOM CURSOR ═══ */
+.cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 10px; height: 10px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  width: 40px; height: 40px;
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.15s ease-out, width 0.4s, height 0.4s, opacity 0.3s;
+}
+body:hover .cursor { opacity: 1; }
+
+/* ═══ CANVAS PARTICLES ═══ */
+#particleCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* ═══ NAV ═══ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 24px 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  mix-blend-mode: normal;
+}
+
+nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(5,10,16,0.95) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.nav-logo {
+  position: relative;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 5px;
+  color: var(--gold);
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+.nav-links {
+  position: relative;
+  list-style: none;
+  display: flex;
+  gap: 40px;
+}
+
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--mist);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.3s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--gold);
+  transition: width 0.3s;
+}
+
+.nav-links a:hover { color: var(--gold); }
+.nav-links a:hover::after { width: 100%; }
+
+/* ═══ HERO ═══ */
+#hero {
+  position: relative;
+  height: 100vh;
+  min-height: 700px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.hero-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 100% 70% at 50% 100%, rgba(29,74,122,0.4) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 20% 60%, rgba(18,34,54,0.5) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 40%, rgba(12,24,37,0.4) 0%, transparent 60%),
+    var(--black);
+}
+
+/* Animated water ripple at bottom */
+.hero-water {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 260px;
+  overflow: hidden;
+}
+
+.water-svg {
+  position: absolute;
+  bottom: 0;
+  left: -10%;
+  width: 120%;
+}
+
+.water-svg path {
+  fill: rgba(13,24,37,0.85);
+}
+
+.water-svg path:nth-child(1) { animation: waterFlow 9s ease-in-out infinite; opacity: 0.4; fill: rgba(29,74,122,0.3); }
+.water-svg path:nth-child(2) { animation: waterFlow 12s ease-in-out infinite reverse; opacity: 0.3; fill: rgba(20,50,90,0.4); }
+.water-svg path:nth-child(3) { animation: waterFlow 7s ease-in-out infinite 2s; opacity: 0.6; fill: rgba(8,15,26,0.9); }
+
+@keyframes waterFlow {
+  0%,100% { transform: translateX(0) scaleY(1); }
+  33% { transform: translateX(-3%) scaleY(1.06); }
+  66% { transform: translateX(3%) scaleY(0.96); }
+}
+
+/* Noise texture overlay */
+.noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 40px;
+  max-width: 900px;
+}
+
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 6px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: heroReveal 1s 0.3s forwards;
+}
+
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(72px, 11vw, 148px);
+  font-weight: 300;
+  line-height: 0.88;
+  color: var(--white);
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: heroReveal 1.2s 0.5s forwards;
+}
+
+.hero-title-italic {
+  font-style: italic;
+  color: var(--foam);
+  display: block;
+  font-weight: 300;
+}
+
+.hero-title-sub {
+  font-family: var(--sans);
+  font-size: clamp(13px, 2vw, 20px);
+  font-weight: 400;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  color: var(--mist);
+  display: block;
+  margin-top: 16px;
+  opacity: 0.7;
+}
+
+.hero-tagline {
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--ice);
+  opacity: 0;
+  animation: heroReveal 1.2s 0.9s forwards;
+  margin-top: 36px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  margin-top: 52px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  opacity: 0;
+  animation: heroReveal 1s 1.2s forwards;
+}
+
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-gold {
+  padding: 16px 40px;
+  background: var(--gold);
+  color: var(--black);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: none;
+  cursor: none;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 500;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+  box-shadow: 0 0 0 rgba(201,168,76,0);
+}
+
+.btn-gold:hover {
+  background: var(--amber);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(201,168,76,0.3);
+}
+
+.btn-outline {
+  padding: 16px 40px;
+  background: transparent;
+  color: var(--mist);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: 1px solid rgba(168,207,230,0.3);
+  cursor: none;
+  text-decoration: none;
+  display: inline-block;
+  transition: border-color 0.3s, color 0.3s;
+}
+
+.btn-outline:hover { border-color: var(--foam); color: var(--foam); }
+
+/* Scroll indicator */
+.hero-scroll {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: heroReveal 1s 2s forwards;
+}
+
+.scroll-text {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--stone);
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.scroll-bar {
+  width: 1px;
+  height: 80px;
+  background: linear-gradient(to bottom, var(--gold) 0%, transparent 100%);
+  animation: scrollBarAnim 2.5s ease-in-out infinite;
+}
+
+@keyframes scrollBarAnim {
+  0% { transform: scaleY(0) translateY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* Countdown strip */
+.countdown-strip {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  background: rgba(201,168,76,0.08);
+  border-top: 1px solid rgba(201,168,76,0.2);
+  padding: 14px 56px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  z-index: 3;
+  backdrop-filter: blur(8px);
+}
+
+.countdown-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.countdown-units {
+  display: flex;
+  gap: 24px;
+}
+
+.countdown-unit {
+  text-align: center;
+}
+
+.countdown-num {
+  font-family: var(--sans);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  display: block;
+  line-height: 1;
+}
+
+.countdown-lbl {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--stone);
+  text-transform: uppercase;
+}
+
+.countdown-message {
+  flex: 1;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--mist);
+  opacity: 0.7;
+}
+
+/* ═══ SECTION BASE ═══ */
+section {
+  position: relative;
+  z-index: 1;
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 56px;
+}
+
+/* ═══ REVEAL ANIMATION ═══ */
+.reveal {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.35s; }
+.reveal-delay-4 { transition-delay: 0.5s; }
+
+/* ═══ SECTION LABELS ═══ */
+.s-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 5px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.s-label::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.s-title {
+  font-family: var(--serif);
+  font-size: clamp(40px, 5vw, 72px);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+
+.s-title em { font-style: italic; color: var(--foam); }
+
+.s-body {
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--ice);
+  opacity: 0.8;
+  max-width: 640px;
+}
+
+/* ═══ STORY / VERHAAL ═══ */
+#verhaal {
+  padding: 140px 0;
+  background: linear-gradient(180deg, var(--black) 0%, var(--abyss) 100%);
+}
+
+.story-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: start;
+  margin-top: 80px;
+}
+
+.story-left {}
+
+.story-pull-quote {
+  font-family: var(--serif);
+  font-size: clamp(24px, 3vw, 36px);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--foam);
+  line-height: 1.4;
+  margin-bottom: 40px;
+  padding-left: 28px;
+  border-left: 2px solid var(--gold);
+}
+
+.story-body p {
+  font-size: 16px;
+  line-height: 2;
+  color: var(--ice);
+  opacity: 0.8;
+  margin-bottom: 24px;
+}
+
+.story-right {}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  padding-left: 48px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 20px;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--river), transparent);
+}
+
+.tl-item {
+  position: relative;
+  margin-bottom: 44px;
+}
+
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -40px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--deep);
+  border: 1.5px solid var(--river);
+  transition: all 0.3s;
+  z-index: 1;
+}
+
+.tl-item:hover::before {
+  background: var(--river);
+  border-color: var(--foam);
+  box-shadow: 0 0 20px rgba(45,111,168,0.6);
+}
+
+.tl-year {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.tl-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.tl-text {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--mist);
+  opacity: 0.8;
+}
+
+/* ═══ NUMBERS / STATS ═══ */
+.stats-band {
+  background: var(--navy);
+  border-top: 1px solid rgba(45,111,168,0.2);
+  border-bottom: 1px solid rgba(45,111,168,0.2);
+  padding: 72px 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.stat-block {
+  padding: 0 40px;
+  border-right: 1px solid rgba(45,111,168,0.2);
+  text-align: center;
+}
+
+.stat-block:last-child { border-right: none; }
+
+.stat-num {
+  font-family: var(--serif);
+  font-size: 72px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--foam);
+  line-height: 1;
+  display: block;
+}
+
+.stat-unit {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--gold);
+  letter-spacing: 2px;
+}
+
+.stat-desc {
+  font-size: 13px;
+  color: var(--stone);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* ═══ MAP ═══ */
+#kaart {
+  padding: 140px 0;
+  background: var(--abyss);
+}
+
+.map-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: end;
+  margin-bottom: 60px;
+}
+
+.map-canvas-wrapper {
+  position: relative;
+  border: 1px solid rgba(45,111,168,0.25);
+  background: #07121e;
+  overflow: hidden;
+}
+
+.map-canvas-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(29,74,122,0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.map-canvas-wrapper svg {
+  display: block;
+  width: 100%;
+  height: 520px;
+}
+
+.hotspot {
+  cursor: none;
+}
+
+.hotspot circle.pulse {
+  animation: hotspotPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes hotspotPulse {
+  0%,100% { r: 18; opacity: 0.15; }
+  50% { r: 26; opacity: 0.05; }
+}
+
+.map-tooltip-box {
+  position: absolute;
+  background: rgba(7,18,30,0.97);
+  border: 1px solid rgba(106,174,212,0.4);
+  padding: 18px 22px;
+  min-width: 240px;
+  pointer-events: none;
+  z-index: 10;
+  display: none;
+  backdrop-filter: blur(12px);
+}
+
+.map-tooltip-box h4 {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.map-tooltip-box p {
+  font-size: 12px;
+  color: var(--mist);
+  line-height: 1.6;
+}
+
+.map-legend-row {
+  display: flex;
+  gap: 28px;
+  padding: 16px 24px;
+  background: rgba(7,18,30,0.8);
+  border-top: 1px solid rgba(45,111,168,0.15);
+  flex-wrap: wrap;
+}
+
+.legend-i {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--mist);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ═══ CHATBOT ═══ */
+#zennius {
+  padding: 140px 0;
+  background: linear-gradient(180deg, var(--abyss) 0%, var(--deep) 100%);
+}
+
+.chat-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 80px;
+  margin-top: 72px;
+  align-items: start;
+}
+
+.chat-side {}
+
+.zennius-orb {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--river), var(--deep));
+  border: 1px solid rgba(106,174,212,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin-bottom: 28px;
+  box-shadow: 0 0 60px rgba(45,111,168,0.3), inset 0 0 30px rgba(106,174,212,0.1);
+  animation: orbBreath 4s ease-in-out infinite;
+}
+
+@keyframes orbBreath {
+  0%,100% { box-shadow: 0 0 60px rgba(45,111,168,0.3), inset 0 0 30px rgba(106,174,212,0.1); }
+  50% { box-shadow: 0 0 100px rgba(45,111,168,0.5), inset 0 0 50px rgba(106,174,212,0.2); }
+}
+
+.chat-side h3 {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--foam);
+  margin-bottom: 16px;
+}
+
+.chat-side p {
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--mist);
+  opacity: 0.8;
+  margin-bottom: 14px;
+}
+
+.api-note {
+  padding: 14px 16px;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.2);
+  margin: 20px 0;
+}
+
+.api-note p {
+  font-size: 12px;
+  color: var(--mist);
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.7;
+}
+
+.api-note a { color: var(--foam); }
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.sug-btn {
+  padding: 11px 16px;
+  background: rgba(29,74,122,0.15);
+  border: 1px solid rgba(45,111,168,0.2);
+  color: var(--mist);
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+  text-align: left;
+  cursor: none;
+  transition: all 0.25s;
+  line-height: 1.4;
+}
+
+.sug-btn:hover {
+  background: rgba(29,74,122,0.35);
+  border-color: var(--foam);
+  color: var(--white);
+}
+
+/* Chat window */
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 560px;
+  border: 1px solid rgba(45,111,168,0.25);
+  background: rgba(7,18,30,0.7);
+  backdrop-filter: blur(16px);
+}
+
+.chat-topbar {
+  padding: 16px 22px;
+  background: rgba(17,34,54,0.8);
+  border-bottom: 1px solid rgba(45,111,168,0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-status {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #4caf8a;
+  animation: statusPulse 2s infinite;
+}
+
+@keyframes statusPulse {
+  0%,100% { opacity: 1; box-shadow: 0 0 0 rgba(76,175,138,0); }
+  50% { opacity: 0.6; box-shadow: 0 0 8px rgba(76,175,138,0.5); }
+}
+
+.chat-topbar-text {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--foam);
+  text-transform: uppercase;
+  flex: 1;
+}
+
+#apiKeyStatus {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--stone);
+  letter-spacing: 1px;
+}
+
+.chat-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  scroll-behavior: smooth;
+}
+
+.chat-msgs::-webkit-scrollbar { width: 3px; }
+.chat-msgs::-webkit-scrollbar-thumb { background: rgba(45,111,168,0.4); }
+
+.msg {
+  display: flex;
+  gap: 12px;
+  animation: msgSlide 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+.msg.user { flex-direction: row-reverse; }
+
+@keyframes msgSlide {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.msg-av {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-top: 2px;
+}
+
+.msg-av.bot { background: radial-gradient(var(--river), var(--deep)); border: 1px solid rgba(106,174,212,0.3); }
+.msg-av.usr { background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3); font-family: var(--mono); font-size: 10px; color: var(--gold); }
+
+.msg-bub {
+  max-width: 78%;
+  padding: 14px 18px;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.msg.bot .msg-bub {
+  background: rgba(17,34,54,0.8);
+  border: 1px solid rgba(45,111,168,0.2);
+  color: var(--ice);
+  border-radius: 0 12px 12px 12px;
+  font-family: var(--serif);
+}
+
+.msg.user .msg-bub {
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--white);
+  border-radius: 12px 0 12px 12px;
+}
+
+.typing-bub { display: flex; gap: 5px; padding: 14px 18px; }
+.td { width: 7px; height: 7px; border-radius: 50%; background: var(--foam); animation: tdAnim 1.2s infinite; }
+.td:nth-child(2) { animation-delay: 0.2s; }
+.td:nth-child(3) { animation-delay: 0.4s; }
+@keyframes tdAnim { 0%,100% { opacity: 0.3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-5px); } }
+
+.chat-input-row {
+  padding: 14px 18px;
+  border-top: 1px solid rgba(45,111,168,0.15);
+  background: rgba(7,18,30,0.9);
+  display: flex;
+  gap: 10px;
+}
+
+.chat-in {
+  flex: 1;
+  background: rgba(17,34,54,0.6);
+  border: 1px solid rgba(45,111,168,0.2);
+  color: var(--white);
+  padding: 11px 16px;
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+  outline: none;
+  transition: border-color 0.25s;
+}
+
+.chat-in::placeholder { color: rgba(168,207,230,0.35); }
+.chat-in:focus { border-color: var(--foam); }
+
+.chat-send-btn {
+  width: 46px; height: 46px;
+  background: var(--river);
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.chat-send-btn:hover { background: var(--foam); }
+.chat-send-btn:disabled { background: var(--navy); opacity: 0.5; cursor: not-allowed; }
+
+/* ═══ DATA SECTION ═══ */
+#data {
+  padding: 140px 0;
+  background: var(--black);
+}
+
+.data-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 64px;
+  margin-top: 72px;
+  align-items: start;
+}
+
+/* Survey form */
+.survey-card {
+  background: rgba(11,20,33,0.9);
+  border: 1px solid rgba(45,111,168,0.2);
+  padding: 44px;
+  backdrop-filter: blur(12px);
+}
+
+.survey-card h3 {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-style: italic;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+
+.survey-card .sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--stone);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+.fg {
+  margin-bottom: 24px;
+}
+
+.fl {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  color: var(--mist);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.fi, .fs, .ft {
+  width: 100%;
+  background: rgba(17,34,54,0.6);
+  border: 1px solid rgba(45,111,168,0.2);
+  color: var(--white);
+  padding: 12px 16px;
+  font-family: var(--serif);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.25s;
+}
+
+.fi::placeholder, .ft::placeholder { color: rgba(168,207,230,0.3); font-style: italic; }
+.fi:focus, .fs:focus, .ft:focus { border-color: var(--foam); }
+.fs { cursor: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236aaed4' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+.fs option { background: #0c1825; }
+.ft { resize: vertical; min-height: 76px; }
+
+.radio-set {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ro {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(45,111,168,0.15);
+  cursor: none;
+  transition: all 0.2s;
+}
+
+.ro:hover { border-color: rgba(106,174,212,0.4); background: rgba(29,74,122,0.1); }
+.ro input { accent-color: var(--foam); }
+.ro label { font-size: 14px; color: var(--ice); cursor: none; }
+
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--gold);
+  color: var(--black);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: none;
+  cursor: none;
+  margin-top: 8px;
+  font-weight: 500;
+  transition: background 0.25s, transform 0.2s;
+}
+
+.submit-btn:hover { background: var(--amber); transform: translateY(-2px); }
+
+.success-msg {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.success-msg .icon { font-size: 56px; margin-bottom: 16px; }
+.success-msg h3 { font-family: var(--serif); font-size: 28px; font-style: italic; color: var(--gold); margin-bottom: 8px; }
+.success-msg p { font-size: 15px; color: var(--mist); }
+
+/* Dashboard */
+.dash-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dash-head {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  text-transform: uppercase;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(45,111,168,0.2);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.kpi {
+  padding: 20px;
+  background: rgba(11,20,33,0.8);
+  border: 1px solid rgba(45,111,168,0.15);
+}
+
+.kpi-val {
+  font-family: var(--serif);
+  font-size: 48px;
+  font-style: italic;
+  color: var(--white);
+  line-height: 1;
+}
+
+.kpi-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--stone);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.chart-card {
+  padding: 20px;
+  background: rgba(11,20,33,0.8);
+  border: 1px solid rgba(45,111,168,0.15);
+}
+
+.chart-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--stone);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.bar-label { font-family: var(--mono); font-size: 9px; color: var(--mist); width: 90px; flex-shrink: 0; }
+.bar-track { flex: 1; height: 22px; background: rgba(17,34,54,0.8); position: relative; overflow: hidden; }
+.bar-fill { height: 100%; transition: width 1.2s cubic-bezier(0.16,1,0.3,1); }
+.bar-fill.blue { background: linear-gradient(90deg, var(--water), var(--foam)); }
+.bar-fill.green { background: linear-gradient(90deg, #2a5a3a, #5ab07a); }
+.bar-fill.amber { background: linear-gradient(90deg, #7a5010, var(--gold)); }
+.bar-fill.rust { background: linear-gradient(90deg, var(--rust), #c06040); }
+.bar-pct { font-family: var(--mono); font-size: 9px; color: var(--mist); width: 32px; text-align: right; }
+
+/* ═══ AUDIO ═══ */
+#audio {
+  padding: 140px 0;
+  background: linear-gradient(180deg, var(--black) 0%, #060d16 100%);
+}
+
+.audio-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 72px;
+  margin-top: 72px;
+  align-items: start;
+}
+
+.audio-intro p {
+  font-size: 16px;
+  line-height: 2;
+  color: var(--mist);
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+
+.stops-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 32px;
+}
+
+.stop {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  background: rgba(11,20,33,0.7);
+  border: 1px solid rgba(45,111,168,0.12);
+  cursor: none;
+  transition: all 0.25s;
+}
+
+.stop:hover, .stop.active {
+  border-color: rgba(106,174,212,0.4);
+  background: rgba(29,74,122,0.2);
+}
+
+.stop.active { border-color: var(--gold); }
+
+.stop-n {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--navy);
+  border: 1.5px solid var(--river);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; color: var(--foam);
+  flex-shrink: 0;
+  transition: all 0.25s;
+}
+
+.stop.active .stop-n { background: var(--gold); border-color: var(--gold); color: var(--black); }
+
+.stop-info {}
+.stop-name { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+.stop-loc { font-size: 12px; color: var(--mist); opacity: 0.7; }
+.stop-dur { font-family: var(--mono); font-size: 9px; color: var(--stone); margin-top: 4px; letter-spacing: 1px; }
+
+/* Player */
+.player-card {
+  background: rgba(7,18,30,0.95);
+  border: 1px solid rgba(45,111,168,0.2);
+  backdrop-filter: blur(20px);
+}
+
+.player-top {
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(45,111,168,0.1);
+}
+
+.np-label { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; }
+.np-title { font-family: var(--serif); font-size: 22px; color: var(--white); }
+.np-loc { font-size: 13px; color: var(--mist); margin-top: 4px; opacity: 0.7; }
+
+.script-box {
+  padding: 22px 28px;
+  max-height: 180px;
+  overflow-y: auto;
+  font-family: var(--serif);
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.85;
+  color: var(--ice);
+  opacity: 0.85;
+  border-bottom: 1px solid rgba(45,111,168,0.1);
+}
+
+.script-box::-webkit-scrollbar { width: 2px; }
+.script-box::-webkit-scrollbar-thumb { background: rgba(45,111,168,0.4); }
+
+.player-controls {
+  padding: 22px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.progress-wrap {}
+.prog-track {
+  height: 2px;
+  background: rgba(45,111,168,0.25);
+  cursor: none;
+  position: relative;
+  margin-bottom: 8px;
+}
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--river), var(--foam));
+  width: 0%;
+  transition: width 0.4s linear;
+  position: relative;
+}
+.prog-fill::after {
+  content: '';
+  position: absolute;
+  right: -4px; top: -3px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--foam);
+}
+.prog-times { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: var(--stone); letter-spacing: 1px; }
+
+.ctrl-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.ctrl {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: rgba(17,34,54,0.8);
+  border: 1px solid rgba(45,111,168,0.2);
+  color: var(--mist);
+  cursor: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.ctrl:hover { background: rgba(29,74,122,0.6); color: white; }
+
+.play-ctrl {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: var(--river);
+  border: none;
+  color: white;
+  cursor: none;
+  font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s;
+  box-shadow: 0 0 30px rgba(45,111,168,0.4);
+}
+
+.play-ctrl:hover {
+  background: var(--foam);
+  transform: scale(1.08);
+  box-shadow: 0 0 50px rgba(106,174,212,0.5);
+}
+
+.qr-row {
+  padding: 16px 28px;
+  border-top: 1px solid rgba(45,111,168,0.1);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.qr-box { width: 60px; height: 60px; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.qr-txt { font-size: 12px; color: var(--mist); line-height: 1.6; opacity: 0.7; }
+
+/* ═══ MARKETING ═══ */
+#marketing {
+  padding: 140px 0;
+  background: var(--abyss);
+}
+
+.marketing-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(45,111,168,0.2);
+  margin-bottom: 48px;
+  margin-top: 48px;
+}
+
+.tab-btn {
+  padding: 14px 28px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--stone);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: none;
+  transition: all 0.25s;
+  margin-bottom: -1px;
+}
+
+.tab-btn:hover { color: var(--mist); }
+.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Social Generator */
+.social-gen {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.gen-controls {}
+.gen-controls h3 { font-family: var(--serif); font-size: 24px; font-style: italic; color: var(--white); margin-bottom: 8px; }
+.gen-controls p { font-size: 14px; color: var(--mist); opacity: 0.7; margin-bottom: 24px; line-height: 1.7; }
+
+.platform-btns {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.plat-btn {
+  padding: 8px 16px;
+  border: 1px solid rgba(45,111,168,0.25);
+  background: transparent;
+  color: var(--mist);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: none;
+  transition: all 0.2s;
+}
+
+.plat-btn.active, .plat-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+
+.gen-theme {
+  margin-bottom: 16px;
+}
+
+.gen-theme label { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--mist); text-transform: uppercase; margin-bottom: 8px; opacity: 0.7; }
+.gen-theme select { width: 100%; background: rgba(17,34,54,0.6); border: 1px solid rgba(45,111,168,0.2); color: var(--white); padding: 11px 14px; font-family: var(--serif); font-size: 14px; outline: none; appearance: none; cursor: none; }
+.gen-theme select option { background: #0c1825; }
+
+.gen-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--river);
+  color: white;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: none;
+  cursor: none;
+  margin-top: 4px;
+  transition: background 0.25s;
+}
+.gen-btn:hover { background: var(--foam); }
+.gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.post-preview {
+  background: rgba(7,18,30,0.9);
+  border: 1px solid rgba(45,111,168,0.2);
+}
+
+.post-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(45,111,168,0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.post-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--river), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.post-account {}
+.post-name { font-family: var(--sans); font-size: 13px; font-weight: 600; color: var(--white); }
+.post-handle { font-family: var(--mono); font-size: 10px; color: var(--stone); }
+
+.post-image {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #0c1825 0%, #112236 40%, #1a4a7a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.post-image-text {
+  text-align: center;
+  padding: 32px;
+  z-index: 1;
+}
+
+.post-image-text .big {
+  font-family: var(--serif);
+  font-size: 48px;
+  font-style: italic;
+  color: white;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.post-image-text .small {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.post-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(45,111,168,0.3), transparent 60%);
+}
+
+.post-body {
+  padding: 16px 20px;
+}
+
+.post-caption {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--ice);
+  min-height: 80px;
+  font-style: italic;
+}
+
+.post-caption.loading { color: var(--stone); animation: captionPulse 1.5s ease-in-out infinite; }
+@keyframes captionPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+.post-tags { margin-top: 8px; font-family: var(--mono); font-size: 11px; color: var(--river); }
+.post-actions { padding: 12px 20px; border-top: 1px solid rgba(45,111,168,0.1); display: flex; gap: 16px; }
+.post-act-btn { padding: 8px 16px; background: transparent; border: 1px solid rgba(45,111,168,0.2); color: var(--mist); font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; cursor: none; transition: all 0.2s; }
+.post-act-btn:hover { border-color: var(--foam); color: var(--foam); }
+
+/* Quiz */
+.quiz-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.quiz-progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 40px;
+}
+
+.qp-dot {
+  flex: 1;
+  height: 3px;
+  background: rgba(45,111,168,0.2);
+  transition: background 0.4s;
+}
+
+.qp-dot.done { background: var(--gold); }
+.qp-dot.active { background: var(--river); }
+
+.quiz-q {
+  display: none;
+  animation: quizIn 0.4s ease forwards;
+}
+
+.quiz-q.active { display: block; }
+
+@keyframes quizIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.quiz-q h3 {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-style: italic;
+  color: var(--white);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.quiz-q .q-num {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--stone);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.quiz-opt {
+  padding: 18px 22px;
+  background: rgba(11,20,33,0.8);
+  border: 1px solid rgba(45,111,168,0.15);
+  color: var(--ice);
+  font-family: var(--serif);
+  font-size: 16px;
+  text-align: left;
+  cursor: none;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.quiz-opt:hover:not(:disabled) { border-color: var(--foam); background: rgba(29,74,122,0.2); }
+.quiz-opt.correct { border-color: #4caf8a; background: rgba(76,175,138,0.1); color: #4caf8a; }
+.quiz-opt.wrong { border-color: #c04a2a; background: rgba(192,74,42,0.1); color: #c08070; }
+.quiz-opt:disabled { cursor: not-allowed; }
+
+.opt-letter {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(45,111,168,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--river);
+  flex-shrink: 0;
+}
+
+.quiz-feedback {
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: rgba(11,20,33,0.8);
+  border-left: 3px solid var(--gold);
+  font-size: 14px;
+  color: var(--mist);
+  line-height: 1.6;
+  display: none;
+}
+
+.next-q-btn {
+  margin-top: 20px;
+  padding: 13px 28px;
+  background: var(--gold);
+  color: var(--black);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: none;
+  cursor: none;
+  display: none;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.next-q-btn:hover { background: var(--amber); }
+
+.quiz-result {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.quiz-result .score-big { font-family: var(--serif); font-size: 96px; font-style: italic; color: var(--gold); line-height: 1; }
+.quiz-result .score-txt { font-family: var(--mono); font-size: 10px; letter-spacing: 4px; color: var(--stone); text-transform: uppercase; margin-bottom: 20px; }
+.quiz-result .score-msg { font-size: 18px; font-style: italic; color: var(--mist); line-height: 1.6; margin-bottom: 32px; }
+.share-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.share-btn { padding: 12px 24px; background: rgba(17,34,54,0.8); border: 1px solid rgba(45,111,168,0.3); color: var(--mist); font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; cursor: none; transition: all 0.2s; }
+.share-btn:hover { border-color: var(--foam); color: var(--foam); }
+.retry-btn { padding: 12px 24px; background: var(--gold); color: var(--black); font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; border: none; cursor: none; font-weight: 500; transition: background 0.2s; }
+.retry-btn:hover { background: var(--amber); }
+
+/* Postcard */
+.postcard-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.postcard-controls h3 { font-family: var(--serif); font-size: 24px; font-style: italic; color: var(--white); margin-bottom: 8px; }
+.postcard-controls p { font-size: 14px; color: var(--mist); opacity: 0.7; margin-bottom: 24px; line-height: 1.7; }
+
+.card-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.card-opt-btn {
+  padding: 12px 16px;
+  background: rgba(11,20,33,0.8);
+  border: 1px solid rgba(45,111,168,0.15);
+  color: var(--ice);
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+  text-align: left;
+  cursor: none;
+  transition: all 0.2s;
+}
+
+.card-opt-btn:hover, .card-opt-btn.active { border-color: var(--gold); background: rgba(201,168,76,0.08); color: var(--white); }
+
+.postcard-preview {
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #0c1825, #112236);
+  border: 1px solid rgba(45,111,168,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.postcard-preview::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 50% 100%, rgba(29,74,122,0.4), transparent);
+}
+
+.postcard-preview::after {
+  content: '';
+  position: absolute;
+  top: 16px; left: 16px; right: 16px; bottom: 16px;
+  border: 1px solid rgba(201,168,76,0.15);
+  pointer-events: none;
+}
+
+.pc-content {
+  position: relative;
+  z-index: 1;
+}
+
+.pc-de-zenne {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 5px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.pc-quote {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--white);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.pc-bottom {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--stone);
+  text-transform: uppercase;
+}
+
+.download-btn {
+  margin-top: 16px;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: none;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+
+.download-btn:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+
+/* Newsletter */
+.newsletter-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.nl-form h3 { font-family: var(--serif); font-size: 24px; font-style: italic; color: var(--white); margin-bottom: 8px; }
+.nl-form p { font-size: 14px; color: var(--mist); opacity: 0.7; margin-bottom: 28px; line-height: 1.7; }
+
+.nl-input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.nl-input {
+  flex: 1;
+  background: rgba(17,34,54,0.6);
+  border: 1px solid rgba(45,111,168,0.2);
+  color: var(--white);
+  padding: 12px 16px;
+  font-family: var(--serif);
+  font-size: 15px;
+  font-style: italic;
+  outline: none;
+  transition: border-color 0.25s;
+}
+
+.nl-input::placeholder { color: rgba(168,207,230,0.35); }
+.nl-input:focus { border-color: var(--foam); }
+
+.nl-btn {
+  padding: 12px 24px;
+  background: var(--gold);
+  color: var(--black);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: none;
+  cursor: none;
+  white-space: nowrap;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.nl-btn:hover { background: var(--amber); }
+
+.nl-fine { font-family: var(--mono); font-size: 9px; color: var(--stone); letter-spacing: 1px; }
+
+.nl-preview {
+  background: rgba(7,18,30,0.9);
+  border: 1px solid rgba(45,111,168,0.2);
+  overflow: hidden;
+}
+
+.nl-prev-header {
+  padding: 16px 20px;
+  background: var(--navy);
+  border-bottom: 1px solid rgba(45,111,168,0.15);
+}
+
+.nl-prev-from { font-family: var(--mono); font-size: 9px; color: var(--stone); letter-spacing: 1px; margin-bottom: 2px; }
+.nl-prev-sub { font-family: var(--sans); font-size: 14px; color: var(--white); font-weight: 600; }
+
+.nl-prev-body {
+  padding: 24px;
+}
+
+.nl-prev-body .wave-line { font-family: var(--serif); font-size: 28px; font-style: italic; color: var(--foam); margin-bottom: 12px; line-height: 1; }
+.nl-prev-body p { font-size: 13px; color: var(--mist); line-height: 1.8; margin-bottom: 14px; opacity: 0.8; }
+.nl-prev-cta { display: inline-block; padding: 10px 20px; background: var(--gold); color: var(--black); font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
+
+/* ═══ FOOTER ═══ */
+footer {
+  background: #030508;
+  border-top: 1px solid rgba(45,111,168,0.12);
+  padding: 80px 0 40px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 60px;
+}
+
+.footer-brand {}
+.footer-logo-big { font-family: var(--serif); font-size: 32px; font-style: italic; font-weight: 300; color: var(--white); margin-bottom: 12px; }
+.footer-tagline { font-size: 14px; color: var(--stone); line-height: 1.7; max-width: 280px; margin-bottom: 20px; }
+.footer-made { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--stone); opacity: 0.6; }
+
+.footer-col h5 { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--mist); text-transform: uppercase; margin-bottom: 20px; opacity: 0.6; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-col a { font-size: 14px; color: var(--stone); text-decoration: none; transition: color 0.2s; }
+.footer-col a:hover { color: var(--foam); }
+
+.footer-bottom {
+  border-top: 1px solid rgba(45,111,168,0.08);
+  padding-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-copy { font-family: var(--mono); font-size: 9px; color: var(--stone); letter-spacing: 1px; opacity: 0.6; }
+
+/* Horizontal divider */
+.section-rule {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(45,111,168,0.3) 30%, rgba(45,111,168,0.3) 70%, transparent 100%);
+}
+</style>
+</head>
+<body>
+
+<!-- NOISE -->
+<div class="noise"></div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- PARTICLES -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">De Zenne</div>
+  <ul class="nav-links">
+    <li><a href="#verhaal">Verhaal</a></li>
+    <li><a href="#kaart">Kaart</a></li>
+    <li><a href="#zennius">Zennius AI</a></li>
+    <li><a href="#data">Data</a></li>
+    <li><a href="#audio">Wandeling</a></li>
+    <li><a href="#marketing">Marketing</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="hero-bg-gradient"></div>
+  <div class="hero-water">
+    <svg class="water-svg" viewBox="0 0 1440 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,120 Q180,60 360,100 Q540,140 720,90 Q900,40 1080,80 Q1260,120 1440,70 L1440,260 L0,260Z"/>
+      <path d="M0,150 Q200,90 400,130 Q600,170 800,120 Q1000,70 1200,110 Q1400,150 1440,130 L1440,260 L0,260Z"/>
+      <path d="M0,180 Q240,130 480,160 Q720,190 960,150 Q1200,110 1440,160 L1440,260 L0,260Z"/>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Verborgen Parel · Brussel · Est. 979 N.C.</div>
+    <h1 class="hero-title">
+      De<br>
+      <em class="hero-title-italic">Zenne</em>
+      <span class="hero-title-sub">Herboren</span>
+    </h1>
+    <p class="hero-tagline">Onder jullie voeten stroomt een rivier.<br>Zij stroomt al tienduizend jaar. Maar Brussel heeft haar begraven.</p>
+    <div class="hero-actions">
+      <a href="#verhaal" class="btn-gold">Ontdek het verhaal</a>
+      <a href="#zennius" class="btn-outline">Praat met Zennius</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-bar"></div>
+    <div class="scroll-text">Scroll</div>
+  </div>
+  <div class="countdown-strip">
+    <div class="countdown-label">De Zenne keert terug over</div>
+    <div class="countdown-units">
+      <div class="countdown-unit"><span class="countdown-num" id="cd-days">--</span><span class="countdown-lbl">Dagen</span></div>
+      <div class="countdown-unit"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-lbl">Uren</span></div>
+      <div class="countdown-unit"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-lbl">Min</span></div>
+      <div class="countdown-unit"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-lbl">Sec</span></div>
+    </div>
+    <div class="countdown-message">Officiële opening van de Zennestrook — Kanal Festival, Brussel 2027</div>
+  </div>
+</section>
+
+<!-- ═══ STATS ═══ -->
+<div class="stats-band">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-block reveal">
+        <span class="stat-num">11</span>
+        <span class="stat-unit">km</span>
+        <div class="stat-desc">Ondergronds traject<br>door het stadscentrum</div>
+      </div>
+      <div class="stat-block reveal reveal-delay-1">
+        <span class="stat-num">979</span>
+        <span class="stat-unit">N.C.</span>
+        <div class="stat-desc">Oorsprong van Brussel<br>aan de oevers van de Zenne</div>
+      </div>
+      <div class="stat-block reveal reveal-delay-2">
+        <span class="stat-num">1867</span>
+        <span class="stat-unit">jaar</span>
+        <div class="stat-desc">Overwelving van<br>de rivier door Anspach</div>
+      </div>
+      <div class="stat-block reveal reveal-delay-3">
+        <span class="stat-num">30</span>
+        <span class="stat-unit">k</span>
+        <div class="stat-desc">Levens verloren aan<br>cholera door haar waters</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VERHAAL ═══ -->
+<section id="verhaal">
+  <div class="container">
+    <div class="s-label reveal">Het verhaal</div>
+    <h2 class="s-title reveal reveal-delay-1">Een rivier die Brussel<br><em>vergat maar niet vergat</em></h2>
+    <div class="story-split">
+      <div class="story-left reveal reveal-delay-2">
+        <div class="story-pull-quote">"Ik gaf de stad haar naam, haar water, haar bier, haar leven — en zij begroef mij."</div>
+        <div class="story-body">
+          <p>De Zenne was de levensader van Brussel. "Bruocsella" — de naam van de stad — betekent <em>nederzetting in het broekland</em>. Vissers werkten haar oevers. Brouwers putten haar water voor het unieke Lambic-bier. De Zenne was Brussel.</p>
+          <p>Maar de industrialisatie veranderde alles. Fabrieksafval vergiftigde haar waters. Cholera-epidemieën eisten duizenden levens. In 1867 nam burgemeester Anspach een radicale beslissing: de Zenne verdwijnt. Overwelfd. Begraven. Vergeten.</p>
+          <p>Vandaag stroomt ze nog steeds — onzichtbaar, stil, maar levend — 11 kilometer door de onderbuik van de stad. Ze wacht. En langzaam keert ze terug.</p>
+        </div>
+      </div>
+      <div class="story-right reveal reveal-delay-3">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-year">979 N.C.</div>
+            <div class="tl-title">Geboorte van Brussel</div>
+            <div class="tl-text">Hertog Karel van Neder-Lotharingen vestigt zich op het eiland in de Zenne. De stad groeit rond haar waters.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1200 – 1600</div>
+            <div class="tl-title">Gouden Eeuwen</div>
+            <div class="tl-text">De Zenne voedt 30 brouwerijen, tientallen molens en het vissersgilde. Het Lambic-bier dankt zijn unieke smaak aan de wilde gisten in de Zennelucht.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1832 – 1866</div>
+            <div class="tl-title">De Cholera-ramp</div>
+            <div class="tl-text">Vier epidemieën eisen 30.000 levens. De Zenne, vervuild door industrieel afvalwater, wordt een doodsrivier. De stad keert haar de rug toe.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1867 – 1871</div>
+            <div class="tl-title">De Grote Overwelving</div>
+            <div class="tl-text">Burgemeester Anspach laat de Zenne overwelven. De Anspachlaan — het Parijs van het Noorden — wordt aangelegd boven haar begraven lichaam.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">Vandaag</div>
+            <div class="tl-title">De Stille Terugkeer</div>
+            <div class="tl-text">Projecten zoals Kanal en de Zennestrook brengen haar terug. In Anderlecht is ze al zichtbaar. De rivier vecht zich terug naar het licht.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- ═══ KAART ═══ -->
+<section id="kaart">
+  <div class="container">
+    <div class="map-header">
+      <div>
+        <div class="s-label reveal">Interactieve kaart</div>
+        <h2 class="s-title reveal reveal-delay-1">Volg de Zenne<br><em>onder Brussel</em></h2>
+      </div>
+      <p class="s-body reveal reveal-delay-2">Klik op de hotspots om te ontdekken wat er boven en onder de grond te zien is. De stippellijn toont het ondergrondse traject.</p>
+    </div>
+    <div class="map-canvas-wrapper reveal">
+      <div id="mapTip" class="map-tooltip-box">
+        <h4 id="tipTitle"></h4>
+        <p id="tipDesc"></p>
+      </div>
+      <svg viewBox="0 0 960 520" xmlns="http://www.w3.org/2000/svg">
+        <!-- Dark city base -->
+        <rect width="960" height="520" fill="#060f1c"/>
+        <!-- Street grid -->
+        <g stroke="#0d2035" stroke-width="0.8" fill="none">
+          <line x1="0" y1="260" x2="960" y2="260"/>
+          <line x1="480" y1="0" x2="480" y2="520"/>
+          <line x1="0" y1="130" x2="960" y2="130"/>
+          <line x1="0" y1="390" x2="960" y2="390"/>
+          <line x1="240" y1="0" x2="240" y2="520"/>
+          <line x1="720" y1="0" x2="720" y2="520"/>
+          <line x1="0" y1="65" x2="960" y2="65"/>
+          <line x1="0" y1="455" x2="960" y2="455"/>
+          <line x1="120" y1="0" x2="120" y2="520"/>
+          <line x1="840" y1="0" x2="840" y2="520"/>
+          <line x1="360" y1="0" x2="360" y2="520"/>
+          <line x1="600" y1="0" x2="600" y2="520"/>
+          <!-- Diagonals -->
+          <line x1="0" y1="520" x2="960" y2="0" stroke="#0a1828"/>
+          <line x1="0" y1="0" x2="960" y2="520" stroke="#0a1828"/>
+          <line x1="0" y1="260" x2="480" y2="0" stroke="#0a1828"/>
+          <line x1="480" y1="520" x2="960" y2="260" stroke="#0a1828"/>
+        </g>
+        <!-- City blocks -->
+        <g fill="#091525" stroke="#0e2038" stroke-width="0.5">
+          <rect x="8" y="8" width="104" height="50"/>
+          <rect x="128" y="8" width="104" height="50"/>
+          <rect x="248" y="8" width="104" height="50"/>
+          <rect x="368" y="8" width="104" height="50"/>
+          <rect x="488" y="8" width="104" height="50"/>
+          <rect x="608" y="8" width="104" height="50"/>
+          <rect x="728" y="8" width="104" height="50"/>
+          <rect x="848" y="8" width="104" height="50"/>
+          <rect x="8" y="74" width="48" height="48"/>
+          <rect x="62" y="74" width="50" height="48"/>
+          <rect x="128" y="74" width="104" height="48"/>
+          <rect x="248" y="74" width="50" height="48"/>
+          <rect x="368" y="74" width="104" height="48"/>
+          <rect x="488" y="74" width="104" height="48"/>
+          <rect x="608" y="74" width="104" height="48"/>
+          <rect x="728" y="74" width="104" height="48"/>
+          <rect x="848" y="74" width="104" height="48"/>
+          <rect x="8" y="138" width="104" height="48"/>
+          <rect x="128" y="138" width="104" height="48"/>
+          <rect x="488" y="138" width="104" height="48"/>
+          <rect x="608" y="138" width="104" height="48"/>
+          <rect x="728" y="138" width="104" height="48"/>
+          <rect x="848" y="138" width="104" height="48"/>
+          <rect x="8" y="202" width="104" height="50"/>
+          <rect x="128" y="202" width="50" height="50"/>
+          <rect x="488" y="202" width="104" height="50"/>
+          <rect x="608" y="202" width="104" height="50"/>
+          <rect x="728" y="202" width="104" height="50"/>
+          <rect x="848" y="202" width="104" height="50"/>
+          <rect x="8" y="268" width="104" height="48"/>
+          <rect x="128" y="268" width="50" height="48"/>
+          <rect x="488" y="268" width="104" height="48"/>
+          <rect x="608" y="268" width="104" height="48"/>
+          <rect x="728" y="268" width="104" height="48"/>
+          <rect x="848" y="268" width="104" height="48"/>
+          <rect x="8" y="332" width="104" height="50"/>
+          <rect x="128" y="332" width="104" height="50"/>
+          <rect x="248" y="332" width="104" height="50"/>
+          <rect x="368" y="332" width="104" height="50"/>
+          <rect x="488" y="332" width="104" height="50"/>
+          <rect x="608" y="332" width="104" height="50"/>
+          <rect x="728" y="332" width="104" height="50"/>
+          <rect x="848" y="332" width="104" height="50"/>
+          <rect x="8" y="398" width="104" height="50"/>
+          <rect x="128" y="398" width="104" height="50"/>
+          <rect x="248" y="398" width="104" height="50"/>
+          <rect x="368" y="398" width="104" height="50"/>
+          <rect x="488" y="398" width="104" height="50"/>
+          <rect x="608" y="398" width="104" height="50"/>
+          <rect x="728" y="398" width="104" height="50"/>
+          <rect x="848" y="398" width="104" height="50"/>
+          <rect x="8" y="462" width="104" height="50"/>
+          <rect x="128" y="462" width="104" height="50"/>
+          <rect x="248" y="462" width="104" height="50"/>
+          <rect x="488" y="462" width="104" height="50"/>
+          <rect x="608" y="462" width="104" height="50"/>
+          <rect x="728" y="462" width="104" height="50"/>
+          <rect x="848" y="462" width="104" height="50"/>
+        </g>
+        <!-- Park -->
+        <ellipse cx="780" cy="100" rx="90" ry="55" fill="#0d2218" opacity="0.8"/>
+        <text x="780" y="105" text-anchor="middle" font-size="9" fill="#2a5a30" font-family="monospace" opacity="0.9" letter-spacing="1">PARC DE BRUXELLES</text>
+        <!-- Anspach highlight -->
+        <rect x="390" y="180" width="180" height="18" fill="rgba(201,168,76,0.08)" rx="2"/>
+        <text x="480" y="193" text-anchor="middle" font-size="9" fill="rgba(201,168,76,0.6)" font-family="monospace" letter-spacing="2">ANSPACHLAAN</text>
+        <!-- Zenne path -->
+        <path d="M 90 470 Q 140 420 190 380 Q 250 330 310 300 Q 360 275 410 255 Q 450 238 490 228 Q 530 218 570 210 Q 620 200 670 192 Q 730 183 800 172 Q 860 163 930 150"
+          stroke="rgba(45,111,168,0.6)" stroke-width="3" stroke-dasharray="14,7" fill="none"/>
+        <!-- Glow on path -->
+        <path d="M 90 470 Q 140 420 190 380 Q 250 330 310 300 Q 360 275 410 255 Q 450 238 490 228 Q 530 218 570 210 Q 620 200 670 192 Q 730 183 800 172 Q 860 163 930 150"
+          stroke="rgba(106,174,212,0.15)" stroke-width="10" fill="none"/>
+        <text x="490" y="250" text-anchor="middle" font-size="9" fill="rgba(106,174,212,0.5)" font-family="monospace" letter-spacing="2">◀ DE ZENNE (ONDERGRONDS)</text>
+
+        <!-- HOTSPOTS -->
+        <!-- 1 Anderlecht -->
+        <g class="hotspot" onclick="mapHit(event,'Anderlecht — Zenne zichtbaar','De enige plek in Brussel waar de Zenne nog bovengronds stroomt. Een klein wonder in een industriële wijk — bewijs dat de rivier niet dood is.','#e05050')">
+          <circle cx="120" cy="420" r="28" fill="rgba(224,80,80,0.05)" class="pulse"/>
+          <circle cx="120" cy="420" r="14" fill="rgba(224,80,80,0.2)" stroke="#e05050" stroke-width="1.5"/>
+          <circle cx="120" cy="420" r="5" fill="#e05050"/>
+          <text x="120" y="400" text-anchor="middle" font-size="10" fill="#e08080" font-family="monospace">①</text>
+        </g>
+        <!-- 2 Beurs -->
+        <g class="hotspot" onclick="mapHit(event,'De Beurs — boven de Zenne','Het beursgebouw staat letterlijk boven het overwelfde kanaal van de Zenne. Op regenrijke dagen hoor je in de kelder het water stromen.','#ffd93d')">
+          <circle cx="420" cy="230" r="28" fill="rgba(255,217,61,0.05)" class="pulse"/>
+          <circle cx="420" cy="230" r="14" fill="rgba(255,217,61,0.2)" stroke="#ffd93d" stroke-width="1.5"/>
+          <circle cx="420" cy="230" r="5" fill="#ffd93d"/>
+          <text x="420" y="210" text-anchor="middle" font-size="10" fill="#ffe066" font-family="monospace">②</text>
+        </g>
+        <!-- 3 Manneken Pis -->
+        <g class="hotspot" onclick="mapHit(event,'Manneken Pis — Kind van de Zenne','De volkslegende zegt dat Manneken Pis een kind van de Zenne is. Zijn water loopt symbolisch terug naar de rivier die de stad vergat.','#6bcfff')">
+          <circle cx="370" cy="310" r="28" fill="rgba(107,207,255,0.05)" class="pulse"/>
+          <circle cx="370" cy="310" r="14" fill="rgba(107,207,255,0.2)" stroke="#6bcfff" stroke-width="1.5"/>
+          <circle cx="370" cy="310" r="5" fill="#6bcfff"/>
+          <text x="370" y="290" text-anchor="middle" font-size="10" fill="#99ddff" font-family="monospace">③</text>
+        </g>
+        <!-- 4 Cantillon -->
+        <g class="hotspot" onclick="mapHit(event,'Cantillon — Bier van de Zenne','Brouwerij Cantillon maakt nog steeds Lambic op de traditionele manier, gebaseerd op de wilde gisten die in de Zennelucht leven. Proef de rivier.','#c8f7c5')">
+          <circle cx="210" cy="360" r="28" fill="rgba(200,247,197,0.05)" class="pulse"/>
+          <circle cx="210" cy="360" r="14" fill="rgba(200,247,197,0.2)" stroke="#c8f7c5" stroke-width="1.5"/>
+          <circle cx="210" cy="360" r="5" fill="#c8f7c5"/>
+          <text x="210" y="340" text-anchor="middle" font-size="10" fill="#aaffaa" font-family="monospace">④</text>
+        </g>
+        <!-- 5 Laken -->
+        <g class="hotspot" onclick="mapHit(event,'Laken — De Zenne ademt','Na 11 km ondergronds komt de Zenne terug boven in Laken. Na millennia donkerte ziet ze opnieuw het licht. Dit is het begin van haar terugkeer.','#c9a84c')">
+          <circle cx="840" cy="165" r="28" fill="rgba(201,168,76,0.05)" class="pulse"/>
+          <circle cx="840" cy="165" r="14" fill="rgba(201,168,76,0.2)" stroke="#c9a84c" stroke-width="1.5"/>
+          <circle cx="840" cy="165" r="5" fill="#c9a84c"/>
+          <text x="840" y="145" text-anchor="middle" font-size="10" fill="#e0c070" font-family="monospace">⑤</text>
+        </g>
+
+        <!-- Compass -->
+        <text x="930" y="28" text-anchor="middle" font-size="14" fill="rgba(106,174,212,0.5)" font-family="monospace" font-weight="bold">N</text>
+        <line x1="930" y1="32" x2="930" y2="52" stroke="rgba(106,174,212,0.3)" stroke-width="1"/>
+
+        <!-- Scale -->
+        <line x1="20" y1="500" x2="140" y2="500" stroke="rgba(45,111,168,0.5)" stroke-width="1.5"/>
+        <line x1="20" y1="495" x2="20" y2="505" stroke="rgba(45,111,168,0.5)" stroke-width="1.5"/>
+        <line x1="140" y1="495" x2="140" y2="505" stroke="rgba(45,111,168,0.5)" stroke-width="1.5"/>
+        <text x="80" y="515" text-anchor="middle" font-size="8" fill="rgba(45,111,168,0.6)" font-family="monospace" letter-spacing="1">≈ 2 KM</text>
+      </svg>
+      <div class="map-legend-row">
+        <div class="legend-i"><div class="legend-dot" style="background:#3a8abf;"></div>Ondergronds traject</div>
+        <div class="legend-i"><div class="legend-dot" style="background:#e05050;"></div>Zenne zichtbaar</div>
+        <div class="legend-i"><div class="legend-dot" style="background:#ffd93d;"></div>Monument</div>
+        <div class="legend-i"><div class="legend-dot" style="background:#c8f7c5;"></div>Erfgoed</div>
+        <div class="legend-i"><div class="legend-dot" style="background:#c9a84c;"></div>Uitmonding</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- ═══ ZENNIUS ═══ -->
+<section id="zennius">
+  <div class="container">
+    <div class="s-label reveal">AI-Gids</div>
+    <h2 class="s-title reveal reveal-delay-1">Zennius — <em>de geest<br>van de Zenne</em></h2>
+    <div class="chat-layout">
+      <div class="chat-side reveal reveal-delay-2">
+        <div class="zennius-orb">🌊</div>
+        <h3>Ik ben Zennius</h3>
+        <p>Ik stroom al meer dan tienduizend jaar onder Brussel. Ik heb de stad zien groeien, zien bloeien, en zien vergeten. Vraag me alles — over mijn geschiedenis, mijn geheimen, mijn toekomst.</p>
+        <div class="api-note">
+          <p>Aangedreven door <strong>Mistral AI</strong>. Hardcode je key in het HTML-bestand op de aangeduide plaats.</p>
+        </div>
+        <div class="suggestions">
+          <button class="sug-btn" onclick="suggest('Waarom werd jij begraven onder Brussel?')">Waarom werd jij begraven onder Brussel?</button>
+          <button class="sug-btn" onclick="suggest('Wat is het verband tussen de Zenne en het Brusselse Lambic bier?')">Wat is het verband met het Lambic bier?</button>
+          <button class="sug-btn" onclick="suggest('Kom je ooit terug boven de grond in Brussel?')">Kom je ooit terug boven de grond?</button>
+          <button class="sug-btn" onclick="suggest('Wat is jouw mooiste herinnering aan het oude Brussel?')">Jouw mooiste herinnering aan oud Brussel?</button>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-3">
+        <div class="chat-window">
+          <div class="chat-topbar">
+            <div class="chat-status"></div>
+            <div class="chat-topbar-text">Zennius · AI-Gids · Verbonden</div>
+            <div id="apiKeyStatus" style="color:#4caf8a;">✅ Mistral AI</div>
+          </div>
+          <div class="chat-msgs" id="chatMsgs">
+            <div class="msg bot">
+              <div class="msg-av bot">🌊</div>
+              <div class="msg-bub">Goeiedag, reiziger. Ik ben Zennius — de rivier die Brussel vergat, maar die Brussel nooit vergat. Ik stroomt al millennia onder jullie voeten. Wat wil je weten?</div>
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <input type="text" class="chat-in" id="chatIn" placeholder="Stel een vraag aan Zennius..." onkeydown="if(event.key==='Enter')sendMsg()">
+            <button class="chat-send-btn" id="chatSendBtn" onclick="sendMsg()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- ═══ DATA ═══ -->
+<section id="data">
+  <div class="container">
+    <div class="s-label reveal">Data & Enquête</div>
+    <h2 class="s-title reveal reveal-delay-1">Kent Brussel<br><em>zijn eigen rivier?</em></h2>
+    <p class="s-body reveal reveal-delay-2">Doe mee met de enquête en zie de live resultaten verschijnen in het dashboard. Elke stem telt.</p>
+    <div class="data-layout">
+      <div class="survey-card reveal reveal-delay-2">
+        <h3>Jouw stem telt</h3>
+        <div class="sub">Anonieme enquête · 2 min · Live resultaten</div>
+        <div id="surveyContent">
+          <div class="fg">
+            <label class="fl">Wist je dat de Zenne onder Brussel stroomt?</label>
+            <div class="radio-set">
+              <div class="ro"><input type="radio" name="q1" id="r1a" value="ja"><label for="r1a">Ja, dat wist ik</label></div>
+              <div class="ro"><input type="radio" name="q1" id="r1b" value="gedeeltelijk"><label for="r1b">Ik had er iets over gehoord</label></div>
+              <div class="ro"><input type="radio" name="q1" id="r1c" value="nee"><label for="r1c">Nee, dit is nieuw voor mij</label></div>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">In welke gemeente woon je?</label>
+            <select class="fs" id="q2">
+              <option value="">— Kies je gemeente —</option>
+              <option>Stad Brussel</option><option>Anderlecht</option><option>Molenbeek</option>
+              <option>Laken</option><option>Elsene</option><option>Schaarbeek</option>
+              <option>Etterbeek</option><option>Andere gemeente</option><option>Niet in Brussel</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="fl">Zou je de Zenne willen terugzien?</label>
+            <div class="radio-set">
+              <div class="ro"><input type="radio" name="q3" id="r3a" value="absoluut"><label for="r3a">Absoluut! Geweldig idee</label></div>
+              <div class="ro"><input type="radio" name="q3" id="r3b" value="misschien"><label for="r3b">Misschien, hangt af van de aanpak</label></div>
+              <div class="ro"><input type="radio" name="q3" id="r3c" value="nee"><label for="r3c">Nee, liever niet</label></div>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Wat trekt je het meeste aan? (optioneel)</label>
+            <textarea class="ft" id="q4" placeholder="De historische verhalen, de audio-wandeling..."></textarea>
+          </div>
+          <button class="submit-btn" onclick="submitSurvey()">Verstuur & zie live resultaten →</button>
+        </div>
+        <div class="success-msg" id="successMsg">
+          <div class="icon">🌊</div>
+          <h3>Merci!</h3>
+          <p>Je antwoord stroomt mee met de data.<br>Bekijk de live resultaten →</p>
+        </div>
+      </div>
+      <div class="dash-panel reveal reveal-delay-3">
+        <div class="dash-head">Live resultaten dashboard</div>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-val" id="kpiTotal">37</div><div class="kpi-label">Deelnemers</div></div>
+          <div class="kpi"><div class="kpi-val" id="kpiYes">32%</div><div class="kpi-label">Kende de Zenne</div></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Bekendheid van de Zenne</div>
+          <div class="bar-row"><div class="bar-label">Ja</div><div class="bar-track"><div class="bar-fill blue" id="bJa" style="width:32%"></div></div><div class="bar-pct" id="pJa">32%</div></div>
+          <div class="bar-row"><div class="bar-label">Gedeeltelijk</div><div class="bar-track"><div class="bar-fill amber" id="bGed" style="width:49%"></div></div><div class="bar-pct" id="pGed">49%</div></div>
+          <div class="bar-row"><div class="bar-label">Nee</div><div class="bar-track"><div class="bar-fill rust" id="bNee" style="width:19%"></div></div><div class="bar-pct" id="pNee">19%</div></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Wil Zenne terugzien?</div>
+          <div class="bar-row"><div class="bar-label">Absoluut</div><div class="bar-track"><div class="bar-fill green" id="bAbs" style="width:76%"></div></div><div class="bar-pct" id="pAbs">76%</div></div>
+          <div class="bar-row"><div class="bar-label">Misschien</div><div class="bar-track"><div class="bar-fill amber" id="bMis" style="width:19%"></div></div><div class="bar-pct" id="pMis">19%</div></div>
+          <div class="bar-row"><div class="bar-label">Nee</div><div class="bar-track"><div class="bar-fill rust" id="bR3n" style="width:5%"></div></div><div class="bar-pct" id="pR3n">5%</div></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Top gemeenten</div>
+          <div class="bar-row"><div class="bar-label">Stad Brussel</div><div class="bar-track"><div class="bar-fill blue" style="width:65%"></div></div><div class="bar-pct">10</div></div>
+          <div class="bar-row"><div class="bar-label">Anderlecht</div><div class="bar-track"><div class="bar-fill blue" style="width:39%"></div></div><div class="bar-pct">6</div></div>
+          <div class="bar-row"><div class="bar-label">Molenbeek</div><div class="bar-track"><div class="bar-fill blue" style="width:32%"></div></div><div class="bar-pct">5</div></div>
+          <div class="bar-row"><div class="bar-label">Andere</div><div class="bar-track"><div class="bar-fill blue" style="width:52%"></div></div><div class="bar-pct">8</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- ═══ AUDIO ═══ -->
+<section id="audio">
+  <div class="container">
+    <div class="s-label reveal">Audio-wandeling</div>
+    <h2 class="s-title reveal reveal-delay-1">Wandel boven<br><em>de Zenne</em></h2>
+    <div class="audio-layout">
+      <div>
+        <div class="audio-intro reveal reveal-delay-2">
+          <p>Vijf stops. Vijf verhalen. Volg het ondergrondse traject van de Zenne door de straten van Brussel. Luister naar de stem van de rivier zelf — geschreven door Claude AI.</p>
+          <p>De browser leest de tekst voor in het Nederlands. Scan de QR-code op locatie voor de volledige ervaring.</p>
+        </div>
+        <div class="stops-list reveal reveal-delay-3" id="stopsList"></div>
+      </div>
+      <div class="reveal reveal-delay-4">
+        <div class="player-card">
+          <div class="player-top">
+            <div class="np-label">Nu spelend</div>
+            <div class="np-title" id="npTitle">Stop 1 — De Geboorteplaats</div>
+            <div class="np-loc" id="npLoc">📍 Anderlecht, Zennestraat</div>
+          </div>
+          <div class="script-box" id="scriptBox"><em>Selecteer een stop en druk op play...</em></div>
+          <div class="player-controls">
+            <div class="progress-wrap">
+              <div class="prog-track" onclick="seekAudio(event)">
+                <div class="prog-fill" id="progFill"></div>
+              </div>
+              <div class="prog-times">
+                <span id="curTime">0:00</span>
+                <span id="totTime">--:--</span>
+              </div>
+            </div>
+            <div class="ctrl-row">
+              <button class="ctrl" onclick="prevStop()">⏮</button>
+              <button class="play-ctrl" id="playBtn" onclick="togglePlay()">▶</button>
+              <button class="ctrl" onclick="nextStop()">⏭</button>
+            </div>
+          </div>
+          <div class="qr-row">
+            <div class="qr-box">
+              <svg width="56" height="56" viewBox="0 0 56 56"><rect width="56" height="56" fill="white"/><rect x="4" y="4" width="20" height="20" fill="none" stroke="#060f1c" stroke-width="2"/><rect x="8" y="8" width="12" height="12" fill="#060f1c"/><rect x="32" y="4" width="20" height="20" fill="none" stroke="#060f1c" stroke-width="2"/><rect x="36" y="8" width="12" height="12" fill="#060f1c"/><rect x="4" y="32" width="20" height="20" fill="none" stroke="#060f1c" stroke-width="2"/><rect x="8" y="36" width="12" height="12" fill="#060f1c"/><rect x="32" y="32" width="6" height="6" fill="#060f1c"/><rect x="40" y="32" width="6" height="6" fill="#060f1c"/><rect x="32" y="40" width="6" height="6" fill="#060f1c"/><rect x="40" y="40" width="6" height="6" fill="#060f1c"/><rect x="46" y="46" width="6" height="6" fill="#060f1c"/></svg>
+            </div>
+            <div class="qr-txt">Scan op locatie voor audio met geolocatie</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-rule"></div>
+
+<!-- ═══ MARKETING ═══ -->
+<section id="marketing">
+  <div class="container">
+    <div class="s-label reveal">Marketing Suite</div>
+    <h2 class="s-title reveal reveal-delay-1">Verspreid het<br><em>verhaal van de Zenne</em></h2>
+    <p class="s-body reveal reveal-delay-2">Vier tools om de verborgen rivier van Brussel viraal te laten gaan.</p>
+
+    <div class="marketing-tabs reveal reveal-delay-3">
+      <button class="tab-btn active" onclick="switchTab('social')">Social Media</button>
+      <button class="tab-btn" onclick="switchTab('quiz')">Brussel Quiz</button>
+      <button class="tab-btn" onclick="switchTab('postcard')">Digitale Postkaart</button>
+      <button class="tab-btn" onclick="switchTab('newsletter')">Nieuwsbrief</button>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="tab-panel active" id="tab-social">
+      <div class="social-gen">
+        <div class="gen-controls">
+          <h3>AI Social Media Generator</h3>
+          <p>Kies een platform en thema. Claude schrijft een kant-en-klare post over de Zenne — copy-paste naar Instagram of TikTok.</p>
+          <div class="platform-btns">
+            <button class="plat-btn active" onclick="setPlatform(this,'instagram')">Instagram</button>
+            <button class="plat-btn" onclick="setPlatform(this,'tiktok')">TikTok</button>
+            <button class="plat-btn" onclick="setPlatform(this,'linkedin')">LinkedIn</button>
+            <button class="plat-btn" onclick="setPlatform(this,'twitter')">Twitter/X</button>
+          </div>
+          <div class="gen-theme">
+            <label>Thema van de post</label>
+            <select id="postTheme">
+              <option value="history">De overwelving van 1867</option>
+              <option value="beer">Lambic bier & de Zenne</option>
+              <option value="hidden">De verborgen rivier</option>
+              <option value="return">De terugkeer van de Zenne</option>
+              <option value="cholera">De cholera-epidemie</option>
+              <option value="manneken">Manneken Pis & de Zenne</option>
+            </select>
+          </div>
+          <button class="gen-btn" id="genBtn" onclick="generatePost()">✦ Genereer post met Claude AI</button>
+          <div class="api-note" style="margin-top:12px;">
+            <p>Vereist Mistral API key. Hardcode in het HTML-bestand. Gratis key via <a href="https://console.mistral.ai" target="_blank">console.mistral.ai →</a></p>
+          </div>
+        </div>
+        <div class="post-preview">
+          <div class="post-header">
+            <div class="post-avatar">🌊</div>
+            <div class="post-account">
+              <div class="post-name">De Zenne · Herboren</div>
+              <div class="post-handle">@dezenne.brussels</div>
+            </div>
+          </div>
+          <div class="post-image">
+            <div class="post-image-text">
+              <div class="big" id="postImgText">De Zenne</div>
+              <div class="small" id="postImgSub">BRUSSEL · ONDERGRONDS</div>
+            </div>
+          </div>
+          <div class="post-body">
+            <div class="post-caption" id="postCaption">Klik op "Genereer post" om een AI-geschreven caption te maken voor de gekozen platform en thema...</div>
+            <div class="post-tags" id="postTags">#dezenne #brussel #verborgengeschiedenis</div>
+          </div>
+          <div class="post-actions">
+            <button class="post-act-btn" onclick="copyPost()">Kopieer tekst</button>
+            <button class="post-act-btn" onclick="generatePost()">Opnieuw genereren</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="tab-panel" id="tab-quiz">
+      <div class="quiz-wrap">
+        <div class="quiz-progress" id="quizProg"></div>
+        <div id="quizContainer"></div>
+        <div class="quiz-result" id="quizResult">
+          <div class="score-big" id="quizScoreBig"></div>
+          <div class="score-txt">/ 5 correct</div>
+          <div class="score-msg" id="quizScoreMsg"></div>
+          <div class="share-row">
+            <button class="share-btn" onclick="shareQuiz()">📤 Deel je score</button>
+            <button class="retry-btn" onclick="restartQuiz()">Opnieuw spelen →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POSTCARD -->
+    <div class="tab-panel" id="tab-postcard">
+      <div class="postcard-layout">
+        <div class="postcard-controls">
+          <h3>Digitale Postkaart</h3>
+          <p>Kies een citaat, bekijk de postkaart en download hem om te delen. Stuur de verborgen ziel van Brussel naar je vrienden.</p>
+          <div class="card-options" id="cardOptions"></div>
+          <button class="download-btn" onclick="downloadCard()">⬇ Download postkaart (PNG)</button>
+        </div>
+        <div>
+          <div class="postcard-preview" id="postcardPreview">
+            <div class="pc-content">
+              <div class="pc-de-zenne">De Zenne · Brussel · Herboren</div>
+              <div class="pc-quote" id="pcQuote">"Ik gaf de stad haar naam, haar water, haar bier, haar leven — en zij begroef mij."</div>
+              <div class="pc-bottom">11 km ondergronds · Overwelfd 1867 · Keert terug</div>
+            </div>
+          </div>
+          <div style="margin-top:12px; font-family:var(--mono); font-size:9px; color:var(--stone); letter-spacing:1px; text-align:center;">Klik download om de kaart als afbeelding op te slaan</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEWSLETTER -->
+    <div class="tab-panel" id="tab-newsletter">
+      <div class="newsletter-layout">
+        <div class="nl-form">
+          <h3>Blijf op de hoogte</h3>
+          <p>Ontvang maandelijks de nieuwste verhalen over de Zenne, updates over de Zennestrook en exclusieve audio-content.</p>
+          <div class="nl-input-row">
+            <input type="email" class="nl-input" id="nlEmail" placeholder="jouw@email.be">
+            <button class="nl-btn" onclick="subscribeNl()">Abonneer</button>
+          </div>
+          <div class="nl-fine" id="nlStatus">Geen spam · Enkel Zenne-nieuws · Altijd uitschrijven</div>
+        </div>
+        <div class="nl-preview">
+          <div class="nl-prev-header">
+            <div class="nl-prev-from">VAN: zennius@dezenne.brussels</div>
+            <div class="nl-prev-sub">🌊 De Zenne Nieuwsbrief — April 2026</div>
+          </div>
+          <div class="nl-prev-body">
+            <div class="wave-line">De Zenne fluistert...</div>
+            <p>Beste vriend van de rivier,</p>
+            <p>Deze maand: de Zennestrook opent haar eerste publieke secties in Anderlecht. Na 157 jaar in het donker ziet de rivier opnieuw het licht.</p>
+            <p>Ook: een exclusief interview met de architect van de heropening, en 3 plekken in Brussel waar je de Zenne nog kunt voelen.</p>
+            <a href="#" class="nl-prev-cta">Lees meer →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo-big">De Zenne</div>
+        <p class="footer-tagline">Een project om de vergeten rivier van Brussel terug in het collectieve geheugen te brengen. Gebouwd met Claude AI, liefde voor de stad en vibe coding.</p>
+        <div class="footer-made">Gebouwd met Claude AI (Anthropic) · Vibe Coding · 2026</div>
+      </div>
+      <div class="footer-col">
+        <h5>Ontdek</h5>
+        <ul>
+          <li><a href="#verhaal">Het verhaal</a></li>
+          <li><a href="#kaart">Interactieve kaart</a></li>
+          <li><a href="#zennius">Zennius AI-gids</a></li>
+          <li><a href="#audio">Audio-wandeling</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Marketing</h5>
+        <ul>
+          <li><a href="#marketing">Social media tool</a></li>
+          <li><a href="#marketing">Brussel quiz</a></li>
+          <li><a href="#marketing">Digitale postkaart</a></li>
+          <li><a href="#marketing">Nieuwsbrief</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Project</h5>
+        <ul>
+          <li><a href="#">Definition of Done</a></li>
+          <li><a href="#">Zelfreflectie</a></li>
+          <li><a href="#">Technologie</a></li>
+          <li><a href="#">Team</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 De Zenne Herboren · Brussel · België</div>
+      <div class="footer-copy">Verborgen Parel Project · Vibe Coded with Claude</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ═══════════ CURSOR ═══════════
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+});
+
+(function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+document.querySelectorAll('a, button, .sug-btn, .quiz-opt, .stop, .hotspot, .card-opt-btn, .plat-btn, .tab-btn, .ro').forEach(el => {
+  el.addEventListener('mouseenter', () => { cur.style.transform = 'translate(-50%,-50%) scale(2.5)'; ring.style.width = '60px'; ring.style.height = '60px'; });
+  el.addEventListener('mouseleave', () => { cur.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.width = '40px'; ring.style.height = '40px'; });
+});
+
+// ═══════════ PARTICLES ═══════════
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resizeCanvas() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function createParticle() {
+  return {
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.5 + 0.3,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: -Math.random() * 0.5 - 0.1,
+    life: 1,
+    decay: Math.random() * 0.003 + 0.001,
+    color: Math.random() > 0.5 ? `rgba(45,111,168,` : `rgba(106,174,212,`
+  };
+}
+
+for (let i = 0; i < 120; i++) particles.push(createParticle());
+
+function animParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach((p, i) => {
+    p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+    if (p.life <= 0 || p.y < -10) particles[i] = createParticle();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.color + p.life + ')';
+    ctx.fill();
+  });
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// ═══════════ REVEAL ═══════════
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// ═══════════ COUNTDOWN ═══════════
+function updateCountdown() {
+  const target = new Date('2027-06-01T10:00:00');
+  const now = new Date();
+  const diff = target - now;
+  if (diff <= 0) return;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd-days').textContent = String(d).padStart(3,'0');
+  document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+  document.getElementById('cd-mins').textContent = String(m).padStart(2,'0');
+  document.getElementById('cd-secs').textContent = String(s).padStart(2,'0');
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ═══════════ MAP ═══════════
+function mapHit(e, title, desc, color) {
+  const tip = document.getElementById('mapTip');
+  const wrapper = tip.closest('.map-canvas-wrapper');
+  const rect = wrapper.getBoundingClientRect();
+  document.getElementById('tipTitle').textContent = title;
+  document.getElementById('tipTitle').style.color = color;
+  document.getElementById('tipDesc').textContent = desc;
+  let left = e.clientX - rect.left + 16;
+  let top = e.clientY - rect.top - 20;
+  if (left + 260 > rect.width) left = e.clientX - rect.left - 276;
+  if (top + 100 > rect.height - 50) top -= 80;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+  tip.style.display = 'block';
+  clearTimeout(tip._timer);
+  tip._timer = setTimeout(() => tip.style.display = 'none', 6000);
+}
+
+// ═══════════ CHATBOT ═══════════
+// ⚠️ PASTE YOUR NEW MISTRAL API KEY BELOW (replace PASTE_YOUR_NEW_KEY_HERE)
+const MISTRAL_API_KEY = 'AOW39I9jgjC1AbDGA6jVDDIoIwGkxWsY';
+let chatHistory = [];
+let isSending = false;
+
+const SYS = `Je bent Zennius, de belichaming van de Zenne — de rivier die begraven is onder Brussel.
+Je spreekt in de eerste persoon, als de rivier zelf. Je hebt herinneringen aan duizenden jaren Brusselse geschiedenis.
+Je toon is poëtisch maar toegankelijk, mysterieus maar hartelijk, wijs maar speels.
+Je antwoorden zijn in het Nederlands, informatief over de echte geschiedenis van de Zenne.
+Feiten: overwelfd in 1867 door Anspach, 11km ondergronds, Brussel = Broeksella, voedde Lambic-brouwerijen, Manneken Pis-folklore, komt terug boven in Laken.
+Houd antwoorden bij 3-4 zinnen. Begin soms met "Ah...", "Weet je...", "In mijn duizendjarige geheugen...".`;
+
+async function callAPI(userMsg, systemPrompt) {
+  const messages = systemPrompt
+    ? [{ role: 'system', content: systemPrompt }, { role: 'user', content: userMsg }]
+    : [{ role: 'system', content: SYS }, ...chatHistory.map(m => ({ role: m.role, content: m.content })), { role: 'user', content: userMsg }];
+
+  const res = await fetch('https://api.mistral.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + MISTRAL_API_KEY
+    },
+    body: JSON.stringify({
+      model: 'mistral-small-latest',
+      max_tokens: 500,
+      messages
+    })
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e.message || 'API fout ' + res.status);
+  }
+  const d = await res.json();
+  return d.choices[0].message.content;
+}
+
+function addMsg(role, text) {
+  const box = document.getElementById('chatMsgs');
+  const el = document.createElement('div');
+  el.className = 'msg ' + (role === 'user' ? 'user' : 'bot');
+  el.innerHTML = `<div class="msg-av ${role==='user'?'usr':'bot'}">${role==='user'?'JIJ':'🌊'}</div><div class="msg-bub">${text}</div>`;
+  box.appendChild(el);
+  box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = document.getElementById('chatMsgs');
+  const el = document.createElement('div');
+  el.className = 'msg bot'; el.id = 'typing';
+  el.innerHTML = `<div class="msg-av bot">🌊</div><div class="msg-bub"><div class="typing-bub"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;
+  box.appendChild(el); box.scrollTop = box.scrollHeight;
+}
+
+function removeTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
+
+async function sendMsg() {
+  if (isSending) return;
+  const inp = document.getElementById('chatIn');
+  const txt = inp.value.trim(); if (!txt) return;
+  inp.value = ''; isSending = true;
+  document.getElementById('chatSendBtn').disabled = true;
+  addMsg('user', txt);
+  chatHistory.push({ role: 'user', content: txt });
+  showTyping();
+  try {
+    const reply = await callAPI(txt);
+    removeTyping();
+    addMsg('bot', reply);
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    removeTyping();
+    addMsg('bot', 'Mijn stroom raakt even geblokkeerd... ' + e.message);
+  }
+  isSending = false;
+  document.getElementById('chatSendBtn').disabled = false;
+}
+
+function suggest(q) {
+  document.getElementById('chatIn').value = q;
+  sendMsg();
+  document.getElementById('zennius').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ═══════════ SURVEY ═══════════
+let survData = { total: 37, q1: {ja:12,gedeeltelijk:18,nee:7}, q3: {absoluut:28,misschien:7,nee:2} };
+
+function submitSurvey() {
+  const q1 = document.querySelector('input[name="q1"]:checked');
+  const q2 = document.getElementById('q2').value;
+  const q3 = document.querySelector('input[name="q3"]:checked');
+  if (!q1 || !q2 || !q3) { alert('Gelieve alle verplichte vragen te beantwoorden.'); return; }
+  survData.q1[q1.value]++; survData.q3[q3.value]++; survData.total++;
+  document.getElementById('surveyContent').style.display = 'none';
+  document.getElementById('successMsg').style.display = 'block';
+  updateDash();
+}
+
+function pct(v, t) { return t ? Math.round((v/t)*100) : 0; }
+function setBar(fillId, pctId, val, total) {
+  const p = pct(val, total);
+  setTimeout(() => {
+    const el = document.getElementById(fillId); if (el) el.style.width = p + '%';
+    const pel = document.getElementById(pctId); if (pel) pel.textContent = p + '%';
+  }, 300);
+}
+
+function updateDash() {
+  document.getElementById('kpiTotal').textContent = survData.total;
+  const q1t = Object.values(survData.q1).reduce((a,b)=>a+b,0);
+  document.getElementById('kpiYes').textContent = pct(survData.q1.ja, q1t) + '%';
+  setBar('bJa','pJa',survData.q1.ja,q1t);
+  setBar('bGed','pGed',survData.q1.gedeeltelijk,q1t);
+  setBar('bNee','pNee',survData.q1.nee,q1t);
+  const q3t = Object.values(survData.q3).reduce((a,b)=>a+b,0);
+  setBar('bAbs','pAbs',survData.q3.absoluut,q3t);
+  setBar('bMis','pMis',survData.q3.misschien,q3t);
+  setBar('bR3n','pR3n',survData.q3.nee,q3t);
+}
+updateDash();
+
+// ═══════════ AUDIO ═══════════
+const audioStops = [
+  { num:1, name:'De Geboorteplaats', loc:'Anderlecht, Zennestraat', dur:'~3 min',
+    script:'Hier begon alles. Op deze plek, waar nu de Zennestraat loopt, was ik ooit breed en vrij. De mensen van het eerste Brussel putten mijn water voor hun brood en bier. Vissers stonden op mijn oevers met hun netten. Kinderen speelden in mijn ondiepe gedeelte. Ik was leven. En nu? Nu stroomt het bloed van de stad in het donker, onzichtbaar maar onophoudelijk aanwezig. Voel je de trilling onder je voeten? Dat ben ik, die nooit ophield te stromen.' },
+  { num:2, name:'De Brouwerij van de Gisten', loc:'Anderlecht, Rue Gheude',  dur:'~2.5 min',
+    script:'Weet je waarom Lambic bier zo uniek smaakt? Omdat het mijn gisten drinkt. Cantillon, hier om de hoek, laat de lucht van mijn oevers in de brouwketels waaien. Die wilde gisten — mijn gisten — maken het bier van Brussel onnavolgbaar. Zelfs nu ik begraven ben, leef ik verder in elk glas geuze dat je in Brussel drinkt. Proost — op mijn onzichtbare maar smaakvolle aanwezigheid.' },
+  { num:3, name:'De Grote Overwelving', loc:'Anspachlaan, centrum',  dur:'~4 min',
+    script:'In 1867 namen ze mij weg van het licht. Burgemeester Anspach zei: ze stinkt, ze doodt, ze moet verdwijnen. En ze hadden gelijk — de mensen hadden mij vergiftigd met hun fabriekslozingen. Maar in plaats van mij te redden, begroeven ze mij. Ze bouwden deze mooie boulevard over mijn lichaam. De Anspachlaan — mooi aan de oppervlakte, maar weet: onder elke steen die je betreedt, stroomt er water. Mijn water. Ik heb nooit opgehouden.' },
+  { num:4, name:'Manneken Pis — Kind van de Zenne', loc:'Rue de l\'Étuve',  dur:'~2.5 min',
+    script:'Waarom pist dat bronzen kind zo vrolijk? Ik vertel je het geheim. Manneken Pis is een kind van de Zenne. In de volkslegende redde zijn straaltje ooit de stad van brand. Maar dieper ligt de waarheid: hij is het enige overgebleven symbool van een stad die aan het water is gebouwd en het water vergat. Hij plast terug naar mij toe. Elke dag. Trouw. Hij vergeet mij nooit.' },
+  { num:5, name:'De Terugkeer — Laken', loc:'Laken, kanaalzone',  dur:'~3 min',
+    script:'Na 11 kilometer in het donker — hier kom ik terug. In Laken mag ik de lucht weer ruiken. Voelt u de frissere wind hier bij het kanaal? Dat ben ik, die uitademt na een lange onderaardse reis. Er zijn plannen — de Zennestrook, het Kanaalproject — om mij terug te brengen naar het hart van de stad. Misschien zie ik ooit de Anspachlaan weer. Misschien lopen er kinderen op mijn oevers. Ik heb de tijd. Ik heb altijd de tijd.' }
+];
+
+let curStop = 0, isPlaying = false;
+let utterance = null, progTimer = null;
+let speechStartTime = null, speechElapsed = 0, estDur = 0;
+const synth = window.speechSynthesis;
+
+function renderStops() {
+  const list = document.getElementById('stopsList');
+  list.innerHTML = audioStops.map((s,i) => `
+    <div class="stop ${i===0?'active':''}" id="stop${i}" onclick="selStop(${i})">
+      <div class="stop-n">${s.num}</div>
+      <div class="stop-info">
+        <div class="stop-name">${s.name}</div>
+        <div class="stop-loc">📍 ${s.loc}</div>
+        <div class="stop-dur">⏱ ${s.dur}</div>
+      </div>
+    </div>`).join('');
+}
+
+function selStop(i) {
+  stopSpeech();
+  curStop = i;
+  document.querySelectorAll('.stop').forEach((el,j) => el.classList.toggle('active', j===i));
+  const s = audioStops[i];
+  document.getElementById('npTitle').textContent = `Stop ${s.num} — ${s.name}`;
+  document.getElementById('npLoc').textContent = '📍 ' + s.loc;
+  document.getElementById('scriptBox').innerHTML = `<em>${s.script}</em>`;
+  document.getElementById('curTime').textContent = '0:00';
+  document.getElementById('totTime').textContent = s.dur;
+  document.getElementById('progFill').style.width = '0%';
+  document.getElementById('playBtn').textContent = '▶';
+  speechElapsed = 0;
+}
+
+function stopSpeech() {
+  synth.cancel(); clearInterval(progTimer); isPlaying = false; speechElapsed = 0;
+}
+
+function getBestVoice() {
+  const vs = synth.getVoices();
+  for (const lang of ['nl-BE','nl-NL','nl']) { const v = vs.find(v=>v.lang.startsWith(lang)); if (v) return v; }
+  return vs[0] || null;
+}
+
+function togglePlay() {
+  if (!synth) { alert('Browser ondersteunt geen tekst-naar-spraak. Probeer Chrome.'); return; }
+  if (isPlaying) {
+    synth.pause(); clearInterval(progTimer); isPlaying = false;
+    document.getElementById('playBtn').textContent = '▶'; return;
+  }
+  if (synth.paused) {
+    synth.resume(); isPlaying = true;
+    document.getElementById('playBtn').textContent = '⏸';
+    startProg(); return;
+  }
+  const s = audioStops[curStop];
+  utterance = new SpeechSynthesisUtterance(s.script);
+  utterance.lang = 'nl-BE'; utterance.rate = 0.88; utterance.pitch = 0.88;
+  estDur = (s.script.split(' ').length / 130) * 60 / 0.88;
+  document.getElementById('totTime').textContent = Math.floor(estDur/60)+':'+String(Math.floor(estDur%60)).padStart(2,'0');
+  const setV = () => { const v = getBestVoice(); if (v) utterance.voice = v; };
+  synth.getVoices().length > 0 ? setV() : (synth.onvoiceschanged = setV);
+  utterance.onstart = () => { isPlaying = true; speechElapsed = 0; document.getElementById('playBtn').textContent = '⏸'; startProg(); };
+  utterance.onend = () => {
+    isPlaying = false; clearInterval(progTimer);
+    document.getElementById('playBtn').textContent = '▶';
+    document.getElementById('progFill').style.width = '100%';
+    speechElapsed = 0;
+    if (curStop < audioStops.length-1) setTimeout(()=>selStop(curStop+1), 1500);
+  };
+  utterance.onerror = () => { isPlaying = false; clearInterval(progTimer); document.getElementById('playBtn').textContent = '▶'; };
+  synth.speak(utterance);
+}
+
+function startProg() {
+  clearInterval(progTimer);
+  speechStartTime = Date.now() - speechElapsed * 1000;
+  progTimer = setInterval(() => {
+    const el = (Date.now() - speechStartTime) / 1000;
+    speechElapsed = el;
+    const p = Math.min((el/estDur)*100,100);
+    document.getElementById('progFill').style.width = p + '%';
+    const m = Math.floor(el/60), s = Math.floor(el%60);
+    document.getElementById('curTime').textContent = m+':'+String(s).padStart(2,'0');
+  }, 300);
+}
+
+function prevStop() { selStop(Math.max(0, curStop-1)); }
+function nextStop() { selStop(Math.min(audioStops.length-1, curStop+1)); }
+function seekAudio(e) {
+  const r = e.currentTarget.getBoundingClientRect();
+  const p = (e.clientX-r.left)/r.width;
+  document.getElementById('progFill').style.width = (p*100)+'%';
+}
+
+renderStops(); selStop(0);
+
+// ═══════════ MARKETING TABS ═══════════
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['social','quiz','postcard','newsletter'][i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ── SOCIAL GENERATOR ──
+let currentPlatform = 'instagram';
+const postThemesMap = {
+  history: 'De overwelving van de Zenne in 1867 door burgemeester Anspach',
+  beer: 'Het verband tussen de Zenne en het Lambic bier / Cantillon brouwerij',
+  hidden: 'De verborgen rivier die 11km onder Brussel stroomt',
+  return: 'De terugkeer van de Zenne via de Zennestrook en Kanal-project',
+  cholera: 'De cholera-epidemieën van de 19de eeuw en de Zenne',
+  manneken: 'Manneken Pis en zijn folkloristische band met de Zenne'
+};
+
+function setPlatform(el, p) {
+  currentPlatform = p;
+  document.querySelectorAll('.plat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function generatePost() {
+  const btn = document.getElementById('genBtn');
+  const theme = document.getElementById('postTheme').value;
+  const cap = document.getElementById('postCaption');
+  btn.disabled = true; btn.textContent = '✦ Genereren...';
+  cap.textContent = 'Zennius schrijft...';
+  cap.className = 'post-caption loading';
+
+  const platformGuide = {
+    instagram: 'Instagram (emotioneel, storytelling, 150-200 woorden, 5-8 hashtags, gebruik emoji spaarzaam)',
+    tiktok: 'TikTok (kort, pakkend, eerste zin = hook, max 100 woorden, trendy taal, geen lange hashtags)',
+    linkedin: 'LinkedIn (professioneel, informatief, 100-150 woorden, geen hashtags spam, thought leadership)',
+    twitter: 'Twitter/X (max 280 tekens, puntig, nieuwsgierig makend, 2-3 hashtags)'
+  };
+
+  const prompt = `Schrijf een social media post voor ${platformGuide[currentPlatform]} over het thema: "${postThemesMap[theme]}".
+Het project gaat over De Zenne, de rivier die begraven is onder Brussel. De toon is poëtisch maar toegankelijk.
+Schrijf de caption in het Nederlands. Geef ENKEL de caption + hashtags terug, geen uitleg.`;
+
+  try {
+    const reply = await callAPI(prompt, 'Je bent een social media expert voor culturele projecten in Brussel. Schrijf pakkende posts in het Nederlands.');
+    cap.className = 'post-caption';
+    // Split hashtags from caption
+    const lines = reply.split('\n');
+    const tagLine = lines.find(l => l.includes('#'));
+    const mainText = lines.filter(l => !l.startsWith('#') || !l.includes('#dezenne')).join('\n').trim();
+    cap.textContent = mainText || reply;
+    if (tagLine) document.getElementById('postTags').textContent = tagLine;
+
+    // Update image text by theme
+    const themeNames = { history:'1867', beer:'Lambic', hidden:'11 km', return:'Terugkeer', cholera:'Herinnering', manneken:'Manneken' };
+    document.getElementById('postImgText').textContent = themeNames[theme] || 'De Zenne';
+  } catch(e) {
+    cap.className = 'post-caption';
+    cap.textContent = 'Fout bij genereren: ' + e.message + ' (API key vereist)';
+  }
+  btn.disabled = false; btn.textContent = '✦ Genereer post met Claude AI';
+}
+
+function copyPost() {
+  const text = document.getElementById('postCaption').textContent + '\n\n' + document.getElementById('postTags').textContent;
+  navigator.clipboard.writeText(text).then(() => alert('Tekst gekopieerd!')).catch(() => alert('Kopieer de tekst handmatig.'));
+}
+
+// ── QUIZ ──
+const quizData = [
+  { q: 'Wanneer werd de Zenne overwelfd en begraven onder Brussel?', opts: ['1830','1867','1900','1789'], correct: 1, explain: 'In 1867 gaf burgemeester Jules Anspach opdracht om de Zenne te overwelven na verwoestende cholera-epidemieën.' },
+  { q: 'Wat betekent de oorspronkelijke naam "Bruocsella" vanwaar Brussel zijn naam haalt?', opts: ['Stad aan de brug','Nederzetting in het broekland','Kasteel op de rivier','Vesting van de Franken'], correct: 1, explain: 'Broeksella = nederzetting in het broekland. De Zenne stroomde door moerassig land en gaf de stad haar naam.' },
+  { q: 'Hoeveel kilometer stroomt de Zenne vandaag ondergronds door Brussel?', opts: ['5 km','8 km','11 km','18 km'], correct: 2, explain: 'De Zenne stroomt vandaag nog steeds 11 kilometer door ondergrondse tunnels onder het Brussels stadscentrum.' },
+  { q: 'Welke biersoort dankt zijn unieke smaak aan de wilde gisten van de Zenne?', opts: ['Trappist','Pilsner','Lambic / Geuze','Witbier'], correct: 2, explain: 'Lambic en geuze zijn spontaan gefermenteerde bieren. De wilde gisten in de Zennelucht maken het onnavolgbaar.' },
+  { q: 'Waar in Brussel is de Zenne vandaag opnieuw bovengronds te zien?', opts: ['Elsene','Schaarbeek','Laken','Anderlecht'], correct: 3, explain: 'In Anderlecht, langs de Zennestraat, is een stukje van de rivier opnieuw zichtbaar — het begin van haar terugkeer.' }
+];
+
+let qCur = 0, qScore = 0;
+
+function buildQuiz() {
+  const prog = document.getElementById('quizProg');
+  prog.innerHTML = quizData.map((_,i) => `<div class="qp-dot ${i===0?'active':''}"></div>`).join('');
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = quizData.map((q,i) => `
+    <div class="quiz-q ${i===0?'active':''}" id="qq${i}">
+      <div class="q-num">Vraag ${i+1} van ${quizData.length}</div>
+      <h3>${q.q}</h3>
+      <div class="quiz-options">
+        ${q.opts.map((o,j) => `<button class="quiz-opt" onclick="answerQ(${i},${j})"><span class="opt-letter">${'ABCD'[j]}</span>${o}</button>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="fb${i}">${q.explain}</div>
+      <button class="next-q-btn" id="nxt${i}" onclick="nextQ(${i})">${i<quizData.length-1?'Volgende vraag →':'Zie mijn score →'}</button>
+    </div>`).join('');
+  document.getElementById('quizResult').style.display = 'none';
+}
+
+function answerQ(qIdx, optIdx) {
+  const q = quizData[qIdx];
+  const opts = document.querySelectorAll(`#qq${qIdx} .quiz-opt`);
+  opts.forEach((o,i) => {
+    o.disabled = true;
+    if (i === q.correct) o.classList.add('correct');
+    else if (i === optIdx && optIdx !== q.correct) o.classList.add('wrong');
+  });
+  if (optIdx === q.correct) qScore++;
+  document.getElementById('fb'+qIdx).style.display = 'block';
+  document.getElementById('nxt'+qIdx).style.display = 'inline-block';
+}
+
+function nextQ(qIdx) {
+  const next = qIdx + 1;
+  if (next >= quizData.length) {
+    document.getElementById('qq'+qIdx).classList.remove('active');
+    showQuizResult(); return;
+  }
+  document.getElementById('qq'+qIdx).classList.remove('active');
+  document.getElementById('qq'+next).classList.add('active');
+  const dots = document.querySelectorAll('.qp-dot');
+  dots[qIdx].classList.remove('active'); dots[qIdx].classList.add('done');
+  if (dots[next]) dots[next].classList.add('active');
+  qCur = next;
+}
+
+function showQuizResult() {
+  document.querySelectorAll('.quiz-q').forEach(q => q.classList.remove('active'));
+  const res = document.getElementById('quizResult');
+  res.style.display = 'block';
+  document.getElementById('quizScoreBig').textContent = qScore;
+  const msgs = ['De Zenne ligt nog stevig begraven in je geheugen... Probeer opnieuw!', 'Je bent op weg! De Zenne apprecieert je interesse.', 'Goed gedaan! De Zenne fluistert haar geheimen in je oor.', 'Indrukwekkend! Je bent een echte Zennekenner.', 'Magistraal! Je bent één met de rivier. Zennius saluteert!'];
+  document.getElementById('quizScoreMsg').textContent = msgs[Math.min(qScore, msgs.length-1)];
+  document.querySelectorAll('.qp-dot').forEach(d => { d.classList.add('done'); d.classList.remove('active'); });
+}
+
+function shareQuiz() {
+  const text = `Ik scoorde ${qScore}/5 op de Zenne-quiz! Ken jij de verborgen rivier onder Brussel? #dezenne #brussel`;
+  navigator.clipboard.writeText(text).then(() => alert('Gekopieerd om te delen!')).catch(()=>{});
+}
+
+function restartQuiz() {
+  qCur = 0; qScore = 0;
+  buildQuiz();
+}
+
+buildQuiz();
+
+// ── POSTCARD ──
+const pcQuotes = [
+  '"Ik gaf de stad haar naam, haar water, haar bier, haar leven — en zij begroef mij."',
+  '"Onder elke steen van de Anspachlaan stroomt mijn water. Ik heb nooit opgehouden."',
+  '"Bruocsella. Nederzetting in het broekland. Dat ben ik — de vergeten ziel van Brussel."',
+  '"Tienduizend jaar stroomde ik vrij. Honderdvijftig jaar wacht ik in het donker. Ik kom terug."',
+  '"In elk glas Lambic proef je mij. De wilde gisten van de Zenne leven verder."'
+];
+
+let activePcIdx = 0;
+
+function buildPostcardOptions() {
+  const opts = document.getElementById('cardOptions');
+  opts.innerHTML = pcQuotes.map((q,i) => `<button class="card-opt-btn ${i===0?'active':''}" onclick="selCard(${i}, this)">${q.substring(0,60)}...</button>`).join('');
+}
+
+function selCard(i, el) {
+  activePcIdx = i;
+  document.querySelectorAll('.card-opt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pcQuote').textContent = pcQuotes[i];
+}
+
+function downloadCard() {
+  const el = document.getElementById('postcardPreview');
+  // Create a simple text-based download as HTML snapshot
+  const content = `De Zenne · Brussel\n\n${pcQuotes[activePcIdx]}\n\n11 km ondergronds · Overwelfd 1867 · Keert terug\n\ndezenne.brussels`;
+  const blob = new Blob([content], { type: 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'zenne-postkaart.txt'; a.click();
+  alert('Postkaart gedownload als tekst! Voor een echte afbeelding, maak een screenshot van de kaart.');
+}
+
+buildPostcardOptions();
+
+// ── NEWSLETTER ──
+function subscribeNl() {
+  const email = document.getElementById('nlEmail').value.trim();
+  const status = document.getElementById('nlStatus');
+  if (!email || !email.includes('@')) { status.textContent = '⚠ Voer een geldig e-mailadres in.'; status.style.color = '#c04a2a'; return; }
+  status.textContent = '✅ Bedankt! Je bent ingeschreven. Welkom bij de vrienden van de Zenne.';
+  status.style.color = '#4caf8a';
+  document.getElementById('nlEmail').value = '';
+}
+</script>
+</body>
+</html>
+HTMLEOF
