@@ -3968,11 +3968,7 @@ footer {
 </div>
 
 <script>
-// CURSOR
-const cur=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
-(function a(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
+
 
 // PARTICLES
 const cv=document.getElementById('particleCanvas'),ct=cv.getContext('2d');
@@ -4037,7 +4033,7 @@ let MISTRAL_API_KEY = 'AOW39I9jgjC1AbDGA6jVDDIoIwGkxWsY';
 async function callAPI(userMsg, systemPrompt) {
   const messages = systemPrompt
     ? [{role:'system',content:systemPrompt},{role:'user',content:userMsg}]
-    : [{role:'system',content:SYS},...chatHistory.map(m=>({{'role':m.role,'content':m.content}})),{role:'user',content:userMsg}];
+    : [{role:'system',content:SYS},...chatHistory.map(m => ({ role: m.role, content: m.content })),{role:'user',content:userMsg}];
   const res=await fetch('https://api.mistral.ai/v1/chat/completions',{
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+MISTRAL_API_KEY},
@@ -4074,7 +4070,8 @@ document.querySelectorAll('a, button, .sug-btn, .quiz-opt, .stop, .hotspot, .car
 // ═══════════ PARTICLES ═══════════
 const canvas = document.getElementById('particleCanvas');
 const ctx = canvas.getContext('2d');
-let W, H, particles = [];
+// let W, H, particles = [];
+particles = [];
 
 function resizeCanvas() {
   W = canvas.width = window.innerWidth;
@@ -4157,7 +4154,7 @@ function mapHit(e, title, desc, color) {
 
 // ═══════════ CHATBOT ═══════════
 // ⚠️ PASTE YOUR NEW MISTRAL API KEY BELOW (replace PASTE_YOUR_NEW_KEY_HERE)
-const MISTRAL_API_KEY = 'PASTE_YOUR_NEW_KEY_HERE';
+;
 let chatHistory = [];
 let isSending = false;
 
